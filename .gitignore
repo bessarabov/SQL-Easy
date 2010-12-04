@@ -1,0 +1,7 @@
+META.yml
+Makefile
+SQL-Easy-*.tar.gz
+*.pl
+blib/
+pm_to_blib
+
