@@ -25,8 +25,9 @@ SQL::Easy give you easy access to data stored in databases using well known SQL 
             database => 'my_blog',
             user => 'user',
             password => 'secret',
-            host => 'localhost',
-            port => '3306',
+            host => 'localhost'                     # default 'localhost'
+            port => 3306,                           # default 3306
+            connection_check_threshold => 30,       # default 30
             debug => 0,
     } );
 
@@ -73,12 +74,15 @@ SQL::Easy give you easy access to data stored in databases using well known SQL 
     # you only need to execute some sql. You can do it by
     $se->execute("update posts set title = ? where id = ?", "JFDI", 2);
 
+    # If it passed more than 'connection_check_threshold' seconds between requests
+    # the module will check that db connection is alive and reconnect if it went away
+
 =cut
 
 use strict;
 use warnings;
 
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 use DBI;
 
@@ -102,19 +106,22 @@ sub new {
     $self->{dbh} = $params->{dbh};
     $self->{debug} = $params->{debug};
     $self->{count} = 0;
+    $self->{connection_check_threshold} = $params->{connection_check_threshold} || 30;
 
     unless ($self->{dbh}) {
-        my $host       = $params->{host} || 'localhost';
-        my $port       = $params->{port} || 3306;
-        my $db         = $params->{database};
-        my $user       = $params->{user};
-        my $password   = $params->{password};
+        my $settings = {
+            host       => $params->{host} || 'localhost',
+            port       => $params->{port} || 3306,
+            db         => $params->{database},
+            user       => $params->{user},
+            password   => $params->{password},
+        };
 
-        my $dsn = "DBI:mysql:database=$db;host=$host;port=$port;mysql_enable_utf8=1";
-        $self->{dbh} = DBI->connect($dsn, $user, $password, { RaiseError => 1,
-                PrintError => 0
-            });
+        $self->{settings} = $settings;
+        $self->{dbh} = _get_connection($settings);
     };
+
+    $self->{last_connection_check} = time;
 
     bless($self, $class);
     return $self;
@@ -129,6 +136,8 @@ sub new {
 
 sub return_dbh {
     my ($self) = @_;
+
+    $self->_reconnect_if_needed();
     
     return $self->{dbh};
 }
@@ -142,6 +151,8 @@ sub return_dbh {
 
 sub return_one {
     my ($self, $sql, @a) = @_;
+
+    $self->_reconnect_if_needed();
 
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
@@ -162,6 +173,8 @@ sub return_one {
 sub return_row {
     my ($self, $sql, @a) = @_;
 
+    $self->_reconnect_if_needed();
+
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
     $sth->execute(@a);
@@ -180,8 +193,9 @@ sub return_row {
 
 sub return_col {
     my ($self, $sql, @a) = @_;
-
     my @return;
+
+    $self->_reconnect_if_needed();
 
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
@@ -217,6 +231,8 @@ sub return_data {
     my ($sql, @a) = @_;
     my @return;
 
+    $self->_reconnect_if_needed();
+
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
     $sth->execute(@a);
@@ -251,6 +267,8 @@ Sub executes sql with bind variables and returns id of inseted record
 sub insert {
     my $self = shift;
     my ($sql, @a) = @_;
+
+    $self->_reconnect_if_needed();
     
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
@@ -271,6 +289,8 @@ Sub just executes sql that it recieves and returns noting interesting
 sub execute {
     my $self = shift;
     my ($sql, @a) = @_;
+
+    $self->_reconnect_if_needed();
 
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
@@ -296,6 +316,56 @@ sub log_debug {
         $self->{count}++;
         print STDERR "sql " . $self->{count} . ": '$sql'\n";
     }
+}
+
+# Method checks if last request to db was more than $self->{connection_check_threshold} seconds ago
+# If it was, then method updates stored dbh
+sub _reconnect_if_needed {
+    my $self = shift;
+
+    if (time - $self->{last_connection_check} > $self->{connection_check_threshold}) {
+        if (_check_connection($self->{dbh})) {
+            $self->{last_connection_check} = time;
+        } else {
+            $self->log_debug( "Database connection went away, reconnecting" );
+            $self->{dbh}= _get_connection($self->{settings});
+        }
+    }
+
+}
+
+# Gets hashref with connection parameters and returns db
+sub _get_connection {
+    my ($s) = @_;
+    my $dsn = "DBI:mysql:database=" . $s->{db} . ";host=" . $s->{host} . ";port=" . $s->{port} . ";mysql_enable_utf8=1";
+    my $dbh = DBI->connect($dsn, $s->{user}, $s->{password}, { RaiseError => 1,
+        PrintError => 0,
+        mysql_auto_reconnect => 0,
+    });
+    return $dbh;
+}
+
+# Check the connection is alive
+# Based on sub with the same name created by David Precious in Dancer::Plugin::Database
+sub _check_connection {
+    my $dbh = shift;
+    return unless $dbh;
+    if (my $result = $dbh->ping) {
+        if (int($result)) {
+            # DB driver itself claims all is OK, trust it:
+            return 1;
+        } else {
+            # It was "0 but true", meaning the default DBI ping implementation
+            # Implement our own basic check, by performing a real simple query.
+            my $ok;
+            eval {
+                $ok = $dbh->do('select 1');
+            };  
+            return $ok;
+        }   
+    } else {
+        return;
+    }   
 }
 
 =head1 AUTHOR

@@ -1,6 +1,10 @@
 Revision history for SQL::Easy
 
-        * Fixed dependences in Makefile.PL. Thanks for cpan user ANDK.
+0.02    2010-12-11
+        * Fixed dependences in Makefile.PL. Thank you, cpan author ANDK.
+        * Now module check if the db connection alive and reconnet if needed.
+          The idea (and a bit of code) has been taken from David Precious's module
+          Dancer::Plugin::Database. Thank you, cpan author BIGPRESH.
 
-0.01    04, 2010-12-04
+0.01    2010-12-04
         * First public release
