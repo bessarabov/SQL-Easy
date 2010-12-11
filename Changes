@@ -1,0 +1,6 @@
+Revision history for SQL::Easy
+
+        * Fixed dependences in Makefile.PL. Thanks for cpan user ANDK.
+
+0.01    04, 2010-12-04
+        * First public release
