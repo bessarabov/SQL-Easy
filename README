@@ -19,8 +19,9 @@ SYNOPSIS
                 database => 'my_blog',
                 user => 'user',
                 password => 'secret',
-                host => 'localhost',
-                port => '3306',
+                host => 'localhost'                     # default 'localhost'
+                port => 3306,                           # default 3306
+                connection_check_threshold => 30,       # default 30
                 debug => 0,
         } );
 
@@ -66,6 +67,9 @@ SYNOPSIS
         # Sometimes you don't need the any return value (when you delete or update rows),
         # you only need to execute some sql. You can do it by
         $se->execute("update posts set title = ? where id = ?", "JFDI", 2);
+
+        # If it passed more than 'connection_check_threshold' seconds between requests
+        # the module will check that db connection is alive and reconnect if it went away
 
 GENERAL FUNCTIONS
 =cut

@@ -372,7 +372,7 @@ sub _check_connection {
 
 Ivan Bessarabov, C<< <ivan@bessarabov.ru> >>
 
-=head2 SOURCE CODE 
+=head1 SOURCE CODE 
 
 The source code for this module is hosted on GitHub http://github.com/bessarabov/SQL-Easy
 
