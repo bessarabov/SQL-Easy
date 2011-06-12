@@ -1,5 +1,5 @@
-libsql-easy-perl (0.03-1) lucid; urgency=low
+libsql-easy-perl (0.03-2) lucid; urgency=low
 
   * Release.
 
- -- Ivan Bessarabov <ivan@bessarabov.ru>  Sun, 12 Jun 2011 18:01:40 +0300
+ -- Ivan Bessarabov <ivan@bessarabov.ru>  Sun, 12 Jun 2011 18:12:45 +0400
