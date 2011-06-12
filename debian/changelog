@@ -1,5 +1,5 @@
-libsql-easy-perl (0.02-1) unstable; urgency=low
+libsql-easy-perl (0.03-1) lucid; urgency=low
 
-  * Initial Release.
+  * Release.
 
- -- Ivan Bessarabov <ivan@bessarabov.ru>  Sat, 8 Jan 2011 13:16:40 +0300
+ -- Ivan Bessarabov <ivan@bessarabov.ru>  Sun, 12 Jun 2011 18:01:40 +0300

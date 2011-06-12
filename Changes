@@ -1,5 +1,10 @@
 Revision history for SQL::Easy
 
+0.03    2011-06-12
+        * Quick and dirty .deb creation
+        * Fixing utf8 work with mysql
+        * Updated README and a small fix in pod
+
 0.02    2010-12-11
         * Fixed dependences in Makefile.PL. Thank you, cpan author ANDK.
         * Now module check if the db connection alive and reconnet if needed.

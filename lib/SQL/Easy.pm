@@ -338,7 +338,8 @@ sub _reconnect_if_needed {
 sub _get_connection {
     my ($s) = @_;
     my $dsn = "DBI:mysql:database=" . $s->{db} . ";host=" . $s->{host} . ";port=" . $s->{port};
-    my $dbh = DBI->connect($dsn, $s->{user}, $s->{password}, { RaiseError => 1,
+    my $dbh = DBI->connect($dsn, $s->{user}, $s->{password}, {
+        RaiseError => 1,
         PrintError => 0,
         mysql_auto_reconnect => 0,
         mysql_enable_utf8 => 1,
