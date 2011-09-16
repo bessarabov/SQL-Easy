@@ -17,6 +17,22 @@ SQL::Easy give you easy access to data stored in databases using well known SQL 
 
 =head1 SYNOPSIS
 
+Let image we have such db structure:
+
+    CREATE TABLE `posts` (
+      `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+      `dt_post` datetime NOT NULL,
+      `title` VARCHAR(255) NOT NULL,
+      PRIMARY KEY (`ID`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+    insert INTO `posts` (`dt_post`, `title`) values
+    ('2010-07-14 18:30:31', 'Hello, World!'),
+    ('2010-08-02 17:13:35', 'use perl or die')
+    ;
+
+Then we we can do some things with SQL::Easy
+
     use SQL::Easy;
     use Data::Dumper; # this is only for example, you don't need it in real script
     
@@ -25,7 +41,7 @@ SQL::Easy give you easy access to data stored in databases using well known SQL 
             database => 'my_blog',
             user => 'user',
             password => 'secret',
-            host => 'localhost'                     # default 'localhost'
+            host => '127.0.0.1',                    # default '127.0.0.1'
             port => 3306,                           # default 3306
             connection_check_threshold => 30,       # default 30
             debug => 0,
@@ -82,7 +98,7 @@ SQL::Easy give you easy access to data stored in databases using well known SQL 
 use strict;
 use warnings;
 
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 
 use DBI;
 
@@ -110,7 +126,7 @@ sub new {
 
     unless ($self->{dbh}) {
         my $settings = {
-            host       => $params->{host} || 'localhost',
+            host       => $params->{host} || '127.0.0.1',
             port       => $params->{port} || 3306,
             db         => $params->{database},
             user       => $params->{user},
@@ -253,6 +269,45 @@ sub return_data {
     }
 
     return \@return;
+}
+
+=head2 return_tsv_data
+ 
+ * Get: 1) $ sql 2) @ bind variables
+ * Return: 1) $ with tab separated db data
+
+Sample usage:
+
+    print $se->return_tsv_data("select dt_post, title from posts order by id limit 2");
+
+It will output the text below (with the tabs as separators).
+
+    dt_post title
+    2010-07-14 18:30:31     Hello, World!
+    2010-08-02 17:13:35     use perl or die
+
+=cut
+
+sub return_tsv_data {
+    my ($self, $sql, @params) = @_;
+    my $return;
+
+    $self->_reconnect_if_needed();
+
+    my $sth = $self->{dbh}->prepare($sql);
+    $self->log_debug($sql);
+    $sth->execute(@params);
+
+    $return .= join ("\t", @{$sth->{NAME}}) . "\n";
+
+    while (my @row = $sth->fetchrow_array) {
+        foreach (@row) {
+            $_ = '' unless defined;
+        }
+        $return .= join ("\t", @row) . "\n";
+    }
+
+    return $return;
 }
 
 =head2 insert

@@ -1,5 +1,8 @@
 Revision history for SQL::Easy
 
+0.04    2011-09-16
+        * new sub return_tsv_data() 
+
 0.03    2011-06-12
         * Quick and dirty .deb creation
         * Fixing utf8 work with mysql
