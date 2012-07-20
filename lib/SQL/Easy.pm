@@ -122,6 +122,7 @@ use warnings;
 our $VERSION = 0.04;
 
 use DBI;
+use Carp;
 
 =head1 METHODS
 
@@ -216,7 +217,7 @@ sub return_one {
 
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
-    $sth->execute(@bind_variables);
+    $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     my @row = $sth->fetchrow_array;
 
@@ -238,7 +239,7 @@ sub return_row {
 
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
-    $sth->execute(@bind_variables);
+    $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     my @row = $sth->fetchrow_array;
 
@@ -261,7 +262,7 @@ sub return_col {
 
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
-    $sth->execute(@bind_variables);
+    $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     while (my @row = $sth->fetchrow_array) {
         push @return, $row[0];
@@ -297,7 +298,7 @@ sub return_data {
 
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
-    $sth->execute(@bind_variables);
+    $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     my @cols = @{$sth->{NAME}};
 
@@ -345,7 +346,7 @@ sub return_tsv_data {
 
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
-    $sth->execute(@bind_variables);
+    $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     $return .= join ("\t", @{$sth->{NAME}}) . "\n";
 
@@ -376,7 +377,7 @@ sub insert {
 
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
-    $sth->execute(@bind_variables);
+    $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     return $sth->{mysql_insertid};
 }
@@ -398,7 +399,7 @@ sub execute {
 
     my $sth = $self->{dbh}->prepare($sql);
     $self->log_debug($sql);
-    $sth->execute(@bind_variables);
+    $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     return 1;
 }
@@ -474,7 +475,6 @@ sub _get_connection {
         $self->{user},
         $self->{password},
         {
-            RaiseError => 1,
             PrintError => 0,
             mysql_auto_reconnect => 0,
             mysql_enable_utf8 => 1,
