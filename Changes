@@ -16,3 +16,8 @@ Revision history for SQL::Easy
 
 0.04    2011-09-16
         * new sub return_tsv_data()
+
+0.05    2012-07-21
+        * More accurate pod and small refactoring
+        * Using croak insted of die
+        * Moving to ExtUtils::MakeMaker from Module::Install

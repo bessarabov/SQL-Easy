@@ -7,6 +7,10 @@ package SQL::Easy;
 
 SQL::Easy - extremely easy access to sql data
 
+=head1 VERSION
+
+Version 0.05
+
 =head1 DESCRIPTION
 
 On cpan there are a lot of ORMs. The problem is that sometimes ORM are too
@@ -119,7 +123,7 @@ See http://dev.perl.org/licenses/ for more information.
 use strict;
 use warnings;
 
-our $VERSION = 0.04;
+our $VERSION = 0.05;
 
 use DBI;
 use Carp;

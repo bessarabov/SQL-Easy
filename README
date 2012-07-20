@@ -1,6 +1,9 @@
 NAME
     SQL::Easy - extremely easy access to sql data
 
+VERSION
+    Version 0.05
+
 DESCRIPTION
     On cpan there are a lot of ORMs. The problem is that sometimes ORM are
     too complex. You don't need ORM in a simple script with couple requests.
@@ -11,109 +14,150 @@ DESCRIPTION
     known SQL language.
 
 SYNOPSIS
-    Let image we have such db structure:
+    Let image we have db 'blog' with one table:
 
         CREATE TABLE `posts` (
           `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-          `dt_post` datetime NOT NULL,
+          `dt` datetime NOT NULL,
           `title` VARCHAR(255) NOT NULL,
           PRIMARY KEY (`ID`)
         ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-        insert INTO `posts` (`dt_post`, `title`) values
-        ('2010-07-14 18:30:31', 'Hello, World!'),
-        ('2010-08-02 17:13:35', 'use perl or die')
+        insert INTO `posts` (`dt`, `title`) values
+          ('1', '2010-07-14 18:30:31', 'Hello, World!'),
+          ('2', '2010-08-02 17:13:35', 'use perl or die')
         ;
 
     Then we we can do some things with SQL::Easy
 
         use SQL::Easy;
-        use Data::Dumper; # this is only for example, you don't need it in real script
-    
-        # create object
+
         my $se = SQL::Easy->new( {
-                database => 'my_blog',
-                user => 'user',
-                password => 'secret',
-                host => '127.0.0.1',                    # default '127.0.0.1'
-                port => 3306,                           # default 3306
-                connection_check_threshold => 30,       # default 30
-                debug => 0,
+            database => 'blog',
+            user     => 'user',
+            password => 'secret',
+            host     => '127.0.0.1',           # default '127.0.0.1'
+            port     => 3306,                  # default 3306
+            connection_check_threshold => 30,  # default 30
+            debug    => 0,                     # default 0
         } );
 
-        # or, if you already have dbh:
-        # ( example how to you can use SQL::Easy with Dancer::Plugin::Database )
-        my $dbh = database();
-        my $se2 = SQL::Easy->new( { dbh=>$dbh } );
+        # get scalar
+        my $posts_count = $se->return_one("select count(id) from posts");
 
-        # let's find out how many blog posts do I have:
-        my $posts_count = $se->return_one('select count(id) from posts');
-        print Dumper $posts_count; # will print $VAR1 = 42;
+        # get list
+        my ($dt, $title) = $se->return_row(
+            "select dt, title from posts where id = ?",
+            1,
+        );
 
-        # some data about post with id 1
-        my @a = $se->return_row("select dt_post, title from posts where id = ?", 1);
-        print Dumper @a;
-        # will print:
-        =head2
-            $VAR1 = '2010-07-14 18:30:31';
-            $VAR2 = 'Hello, World!';
-        =cut
+        # get arrayref
+        my $posts = $se->return_data(
+            "select dt_post, title from posts order by id"
+        );
+        # We will get
+        #    [
+        #        {
+        #            'dt_post' => '2010-07-14 18:30:31',
+        #            'title' => 'Hello, World!'
+        #        },
+        #        {
+        #            'dt_post' => '2010-08-02 17:13:35',
+        #            'title' => 'use perl or die'
+        #        }
+        #    ];
 
-        # some data about 2 posts:
-        print Dumper $se->return_data("select dt_post, title from posts order by id limit 2");
-        =head2
-            $VAR1 = [
-                      {
-                        'dt_post' => '2010-07-14 18:30:31',
-                        'title' => 'Hello, World!'
-                      },
-                      {
-                        'dt_post' => '2010-08-02 17:13:35',
-                        'title' => 'use perl or die'
-                      }
-                    ];
-        =cut
+        my $post_id = $se->insert(
+            "insert into images ( dt_post, title ) values ( now(), ? )",
+            "My new idea"
+        );
+        # $post_id is the id of the new row in table
 
-        # Next. Let add new post:
-        print Dumper $se->insert("insert into images ( dt_post, title ) values ( now(), ? )", "My new idea");
-        # It will print
-        # $VAR1 = 43;
-        # and 43 is the id of the new row in table
- 
-        # Sometimes you don't need the any return value (when you delete or update rows),
-        # you only need to execute some sql. You can do it by
-        $se->execute("update posts set title = ? where id = ?", "JFDI", 2);
+        # Sometimes you don't need the any return value (when you delete or update
+        # rows), you only need to execute some sql. You can do it by
+        $se->execute(
+            "update posts set title = ? where id = ?",
+            "JAPH",
+            2,
+        );
 
-        # If it passed more than 'connection_check_threshold' seconds between requests
-        # the module will check that db connection is alive and reconnect if it went away
+    If it passed more than 'connection_check_threshold' seconds between
+    requests the module will check that db connection is alive and reconnect
+    if it went away.
 
-GENERAL FUNCTIONS
-=cut
+AUTHOR
+    Ivan Bessarabov, `<ivan@bessarabov.ru>'
+
+SOURCE CODE
+    The source code for this module is hosted on GitHub
+    https://github.com/bessarabov/SQL-Easy
+
+BUGS
+    Please report any bugs or feature requests in GitHub Issues
+    https://github.com/bessarabov/SQL-Easy
+
+LICENSE AND COPYRIGHT
+    Copyright 2012 Ivan Bessarabov.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of either: the GNU General Public License as published
+    by the Free Software Foundation; or the Artistic License.
+
+    See http://dev.perl.org/licenses/ for more information.
+
+METHODS
   new
-     * Get: 1) hash with connection information 
-     * Return: 1) object 
+    Get: 1) $class 2) $params - hashref with connection information
 
-    Sub creates an object
+    Return: 1) object
+
+        my $se = SQL::Easy->new( {
+            database => 'blog',
+            user     => 'user',
+            password => 'secret',
+            host     => '127.0.0.1',           # default '127.0.0.1'
+            port     => 3306,                  # default 3306
+            connection_check_threshold => 30,  # default 30
+            debug    => 0,                     # default 0
+        } );
+
+    Or, if you already have dbh:
+
+        my $se2 = SQL::Easy->new( {
+            dbh => $dbh,
+        } );
+
+    For example, if you are woring with Dancer::Plugin::Database you can use
+    this command to create SQL::Easy object:
+
+        my $se3 = SQL::Easy->new( {
+            dbh => database(),
+        } );
 
   return_dbh
-     * Get: - 
-     * Return: 1) $ with dbi handler 
+    Get: 1) $self
+
+    Return: 1) $ with dbi handler
 
   return_one
-     * Get: 1) $ sql 2) @ bind variables
-     * Return: 1) $ with first value of request result
+    Get: 1) $self 2) $sql 3) @bind_variables
+
+    Return: 1) $ with the first value of request result
 
   return_row
-     * Get: 1) $ sql 2) @ bind variables
-     * Return: 1) @ with first row in result table
+    Get: 1) $self 2) $sql 3) @bind_variables
+
+    Return: 1) @ with first row in result table
 
   return_col
-     * Get: 1) $ sql 2) @ bind variables
-     * Return: 1) @ with first column in result table
+    Get: 1) $self 2) $sql 3) @bind_variables
+
+    Return: 1) @ with first column in result table
 
   return_data
-     * Get: 1) $ sql 2) @ bind variables
-     * Return: 1) $ with array of hashes with the result of the query
+    Get: 1) $self 2) $sql 3) @bind_variables
+
+    Return: 1) $ with array of hashes with the result of the query
 
     Sample usage:
 
@@ -127,12 +171,15 @@ GENERAL FUNCTIONS
         }
 
   return_tsv_data
-     * Get: 1) $ sql 2) @ bind variables
-     * Return: 1) $ with tab separated db data
+    Get: 1) $self 2) $sql 3) @bind_variables
+
+    Return: 1) $ with tab separated db data
 
     Sample usage:
 
-        print $se->return_tsv_data("select dt_post, title from posts order by id limit 2");
+        print $se->return_tsv_data(
+            "select dt_post, title from posts order by id limit 2"
+        );
 
     It will output the text below (with the tabs as separators).
 
@@ -141,27 +188,23 @@ GENERAL FUNCTIONS
         2010-08-02 17:13:35     use perl or die
 
   insert
-     * Get: 1) $ sql 2) @ bind variables
-     * Return: 1) $ with id of inserted record
+    Get: 1) $self 2) $sql 3) @bind_variables
+
+    Return: 1) $ with id of inserted record
 
     Sub executes sql with bind variables and returns id of inseted record
 
   execute
-     * Get: 1) $ sql 2) @ bind variables
-     * Return: -
+    Get: 1) $self 2) $sql 3) @bind_variables
 
-    Sub just executes sql that it recieves and returns noting interesting
+    Return: -
+
+    Sub just executes sql that it recieves and returns nothing interesting
 
   log_debug
-     * Get: 1) $ with debug text 
-     * Return: -
+    Get: 1) $self 2) $sql
 
-    If the debug is turned on sub prints sql queries that are executed
+    Return: -
 
-AUTHOR
-    Ivan Bessarabov, `<ivan@bessarabov.ru>'
-
-SOURCE CODE
-    The source code for this module is hosted on GitHub
-    http://github.com/bessarabov/SQL-Easy
+    If the debug is turned on sub wll print $sql to STDERR
 
