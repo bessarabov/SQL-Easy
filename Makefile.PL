@@ -1,11 +1,20 @@
-use inc::Module::Install;
+use strict;
+use warnings;
+use ExtUtils::MakeMaker;
 
-name            'SQL-Easy';
-author          'Ivan Bessarabov <ivan@bessarabov.ru>';
-version         '0.04';
-license         'perl';
-
-requires        'DBI';
-
-auto_install;
-WriteAll;
+WriteMakefile(
+    NAME                => 'SQL::Easy',
+    AUTHOR              => q{Ivan Bessarabov <ivan@bessarabov.ru>},
+    VERSION_FROM        => 'lib/SQL/Easy.pm',
+    ABSTRACT_FROM       => 'lib/SQL/Easy.pm',
+    ($ExtUtils::MakeMaker::VERSION >= 6.3002
+      ? ('LICENSE'=> 'perl')
+      : ()),
+    PL_FILES            => {},
+    PREREQ_PM => {
+        'Test::More' => 0,
+        'DBI' => 0,
+    },
+    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean               => { FILES => 'SQL-Easy-*' },
+);
