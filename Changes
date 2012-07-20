@@ -1,18 +1,18 @@
 Revision history for SQL::Easy
 
-0.04    2011-09-16
-        * new sub return_tsv_data() 
+0.01    2010-12-04
+        * First public release
+
+0.02    2010-12-11
+        * Fixed dependences in Makefile.PL. Thank you, cpan author ANDK.
+        * Now module check if the db connection alive and reconnet if needed.
+          The idea (and a bit of code) has been taken from David Precious's
+          module Dancer::Plugin::Database. Thank you, cpan author BIGPRESH.
 
 0.03    2011-06-12
         * Quick and dirty .deb creation
         * Fixing utf8 work with mysql
         * Updated README and a small fix in pod
 
-0.02    2010-12-11
-        * Fixed dependences in Makefile.PL. Thank you, cpan author ANDK.
-        * Now module check if the db connection alive and reconnet if needed.
-          The idea (and a bit of code) has been taken from David Precious's module
-          Dancer::Plugin::Database. Thank you, cpan author BIGPRESH.
-
-0.01    2010-12-04
-        * First public release
+0.04    2011-09-16
+        * new sub return_tsv_data()
