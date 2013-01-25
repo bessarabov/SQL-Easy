@@ -1,8 +1,7 @@
 Changes
-lib/SQL/Easy.pm
-Makefile.PL
 MANIFEST
+Makefile.PL
 README
-t/001_module_loader.t
-t/002_pod_coverage.t
 TODO
+lib/SQL/Easy.pm
+t/001_module_loader.t
