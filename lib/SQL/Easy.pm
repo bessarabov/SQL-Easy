@@ -94,29 +94,6 @@ If it passed more than 'connection_check_threshold' seconds between requests
 the module will check that db connection is alive and reconnect if it went
 away.
 
-=head1 AUTHOR
-
-Ivan Bessarabov, C<< <ivan@bessarabov.ru> >>
-
-=head1 SOURCE CODE
-
-The source code for this module is hosted on GitHub
-L<https://github.com/bessarabov/SQL-Easy>
-
-=head1 BUGS
-
-Please report any bugs or feature requests in GitHub Issues
-L<https://github.com/bessarabov/SQL-Easy>
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2012 Ivan Bessarabov.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
-
-See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
@@ -524,5 +501,31 @@ sub _check_connection {
         return;
     }
 }
+
+=head1 AUTHOR
+
+Ivan Bessarabov, C<< <ivan@bessarabov.ru> >>
+
+=head1 SOURCE CODE
+
+The source code for this module is hosted on GitHub
+L<https://github.com/bessarabov/SQL-Easy>
+
+=head1 BUGS
+
+Please report any bugs or feature requests in GitHub Issues
+L<https://github.com/bessarabov/SQL-Easy>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2012 Ivan Bessarabov.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;

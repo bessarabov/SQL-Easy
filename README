@@ -85,26 +85,6 @@ SYNOPSIS
     requests the module will check that db connection is alive and reconnect
     if it went away.
 
-AUTHOR
-    Ivan Bessarabov, `<ivan@bessarabov.ru>'
-
-SOURCE CODE
-    The source code for this module is hosted on GitHub
-    https://github.com/bessarabov/SQL-Easy
-
-BUGS
-    Please report any bugs or feature requests in GitHub Issues
-    https://github.com/bessarabov/SQL-Easy
-
-LICENSE AND COPYRIGHT
-    Copyright 2012 Ivan Bessarabov.
-
-    This program is free software; you can redistribute it and/or modify it
-    under the terms of either: the GNU General Public License as published
-    by the Free Software Foundation; or the Artistic License.
-
-    See http://dev.perl.org/licenses/ for more information.
-
 METHODS
   new
     Get: 1) $class 2) $params - hashref with connection information
@@ -207,3 +187,24 @@ METHODS
     Return: -
 
     If the debug is turned on sub wll print $sql to STDERR
+
+AUTHOR
+    Ivan Bessarabov, `<ivan@bessarabov.ru>'
+
+SOURCE CODE
+    The source code for this module is hosted on GitHub
+    https://github.com/bessarabov/SQL-Easy
+
+BUGS
+    Please report any bugs or feature requests in GitHub Issues
+    https://github.com/bessarabov/SQL-Easy
+
+LICENSE AND COPYRIGHT
+    Copyright 2012 Ivan Bessarabov.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of either: the GNU General Public License as published
+    by the Free Software Foundation; or the Artistic License.
+
+    See http://dev.perl.org/licenses/ for more information.
+
