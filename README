@@ -43,16 +43,16 @@ SYNOPSIS
         } );
 
         # get scalar
-        my $posts_count = $se->return_one("select count(id) from posts");
+        my $posts_count = $se->get_one("select count(id) from posts");
 
         # get list
-        my ($dt, $title) = $se->return_row(
+        my ($dt, $title) = $se->get_row(
             "select dt, title from posts where id = ?",
             1,
         );
 
         # get arrayref
-        my $posts = $se->return_data(
+        my $posts = $se->get_data(
             "select dt_post, title from posts order by id"
         );
         # We will get
@@ -114,34 +114,34 @@ METHODS
             dbh => database(),
         } );
 
-  return_dbh
+  get_dbh
     Get: 1) $self
 
     Return: 1) $ with dbi handler
 
-  return_one
+  get_one
     Get: 1) $self 2) $sql 3) @bind_variables
 
     Return: 1) $ with the first value of request result
 
-  return_row
+  get_row
     Get: 1) $self 2) $sql 3) @bind_variables
 
     Return: 1) @ with first row in result table
 
-  return_col
+  get_col
     Get: 1) $self 2) $sql 3) @bind_variables
 
     Return: 1) @ with first column in result table
 
-  return_data
+  get_data
     Get: 1) $self 2) $sql 3) @bind_variables
 
     Return: 1) $ with array of hashes with the result of the query
 
     Sample usage:
 
-        my $a = $se->return_data('select * from t1');
+        my $a = $se->get_data('select * from t1');
 
         print scalar @{$a};         # quantity of returned rows
         print $a->[0]{filename};    # element 'filename' in the first row
@@ -150,14 +150,14 @@ METHODS
             print $a->[$i]{filename}, "\n";
         }
 
-  return_tsv_data
+  get_tsv_data
     Get: 1) $self 2) $sql 3) @bind_variables
 
     Return: 1) $ with tab separated db data
 
     Sample usage:
 
-        print $se->return_tsv_data(
+        print $se->get_tsv_data(
             "select dt_post, title from posts order by id limit 2"
         );
 
@@ -207,4 +207,3 @@ LICENSE AND COPYRIGHT
     by the Free Software Foundation; or the Artistic License.
 
     See http://dev.perl.org/licenses/ for more information.
-
