@@ -2,7 +2,7 @@ NAME
     SQL::Easy - extremely easy access to sql data
 
 VERSION
-    Version 0.05
+    Version 0.06
 
 DESCRIPTION
     On cpan there are a lot of ORMs. The problem is that sometimes ORM are

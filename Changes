@@ -21,3 +21,7 @@ Revision history for SQL::Easy
         * More accurate pod and small refactoring
         * Using croak insted of die
         * Moving to ExtUtils::MakeMaker from Module::Install
+
+0.06    2013-02-22
+        * Making all 'return_*' methods as deprecated.
+        * Small imporvements in pod in tests
