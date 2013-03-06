@@ -509,7 +509,7 @@ sub _get_connection {
             mysql_auto_reconnect => 0,
             mysql_enable_utf8 => 1,
         },
-    );
+    ) or croak "Can't connect to database. Error: " . $DBI::errstr . " . Stopped";
 
     return $dbh;
 }
