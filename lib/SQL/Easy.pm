@@ -1,15 +1,9 @@
 package SQL::Easy;
 
+# ABSTRACT: extremely easy access to sql data
+
 =encoding UTF-8
 =cut
-
-=head1 NAME
-
-SQL::Easy - extremely easy access to sql data
-
-=head1 VERSION
-
-Version 0.06
 
 =head1 DESCRIPTION
 
@@ -94,13 +88,10 @@ If it passed more than 'connection_check_threshold' seconds between requests
 the module will check that db connection is alive and reconnect if it went
 away.
 
-
 =cut
 
 use strict;
 use warnings;
-
-our $VERSION = 0.06;
 
 use DBI;
 use Carp;
@@ -562,10 +553,6 @@ sub _deprecation_warning {
 
 }
 
-=head1 AUTHOR
-
-Ivan Bessarabov, C<< <ivan@bessarabov.ru> >>
-
 =head1 SOURCE CODE
 
 The source code for this module is hosted on GitHub
@@ -575,16 +562,6 @@ L<https://github.com/bessarabov/SQL-Easy>
 
 Please report any bugs or feature requests in GitHub Issues
 L<https://github.com/bessarabov/SQL-Easy>
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2012 Ivan Bessarabov.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
-
-See http://dev.perl.org/licenses/ for more information.
 
 =cut
 

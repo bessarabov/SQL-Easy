@@ -1,7 +1,0 @@
-Changes
-MANIFEST
-Makefile.PL
-README
-TODO
-lib/SQL/Easy.pm
-t/001_module_loader.t
