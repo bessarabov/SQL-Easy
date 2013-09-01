@@ -28,3 +28,11 @@ Revision history for SQL::Easy
 
 0.07    2013-06-21
         * Switched to Dist::Zilla
+
+1.0.0   2013-09-01
+        [Major]
+        * Using SemVer for version numbers
+
+        [Patch]
+        * Added Perl 5.8 to be checked by Travis CI
+        * Fixing travis
