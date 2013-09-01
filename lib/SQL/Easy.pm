@@ -15,6 +15,9 @@ you already knows SQL language.
 SQL::Easy give you easy access to data stored in databases using well known
 SQL language.
 
+SQL::Easy version numbers uses Semantic Versioning standart.
+Please visit L<http://semver.org/> to find out all about this great thing.
+
 =head1 SYNOPSIS
 
 Let image we have db 'blog' with one table:
