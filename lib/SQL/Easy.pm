@@ -500,6 +500,7 @@ sub _get_connection {
         $self->{password},
         {
             PrintError => 0,
+            RaiseError => 1,
             mysql_auto_reconnect => 0,
             mysql_enable_utf8 => 1,
         },
