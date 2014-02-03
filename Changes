@@ -36,3 +36,8 @@ Revision history for SQL::Easy
         [Patch]
         * Added Perl 5.8 to be checked by Travis CI
         * Fixing travis
+
+1.0.1   2014-02-03
+        [Patch]
+        * Added RaiseError. Now DBI dies in case of errors
+        * Added CONTRIBUTORS section to POD and added Igor Sverdlov (HEAD, master)
