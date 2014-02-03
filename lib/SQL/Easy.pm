@@ -557,6 +557,14 @@ sub _deprecation_warning {
 
 }
 
+=head1 CONTRIBUTORS
+
+=over 4
+
+=item * Igor Sverdlov
+
+=back
+
 =head1 SOURCE CODE
 
 The source code for this module is hosted on GitHub
