@@ -42,7 +42,8 @@ Revision history for SQL::Easy
         * Added RaiseError. Now DBI dies in case of errors
         * Added CONTRIBUTORS section to POD and added Igor Sverdlov (HEAD, master)
 
-NEXT
+
+2.0.0   2014-04-11
         [Major]
         * Removed deprecated methods 'return_*'
         * Constructor new() uses hash instead of hashref
