@@ -1,6 +1,11 @@
 language: perl
-install: cpanm --notest Test::Whitespaces DBI
-script: prove -l xt t
+install: cpanm --notest Test::Whitespaces DBI DBD::mysql Test::Deep Test::Most
+
+before_script:
+  - mysql -e 'create database sql_easy;'
+
+script: prove -v -l t xt
+
 perl:
   - "5.8"
   - "5.10"
