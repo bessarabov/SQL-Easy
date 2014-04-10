@@ -41,3 +41,7 @@ Revision history for SQL::Easy
         [Patch]
         * Added RaiseError. Now DBI dies in case of errors
         * Added CONTRIBUTORS section to POD and added Igor Sverdlov (HEAD, master)
+
+NEXT
+        [Major]
+        * Removed deprecated methods 'return_*'

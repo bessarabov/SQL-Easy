@@ -177,14 +177,6 @@ sub get_dbh {
     return $self->{dbh};
 }
 
-sub return_dbh {
-    my ($self) = @_;
-
-    $self->_deprecation_warning("dbh");
-
-    return $self->get_dbh();
-}
-
 =head2 get_one
 
 B<Get:> 1) $self 2) $sql 3) @bind_variables
@@ -207,14 +199,6 @@ sub get_one {
     return $row[0];
 }
 
-sub return_one {
-    my ($self, $sql, @bind_variables) = @_;
-
-    $self->_deprecation_warning("one");
-
-    return $self->get_one($sql, @bind_variables);
-}
-
 =head2 get_row
 
 B<Get:> 1) $self 2) $sql 3) @bind_variables
@@ -235,14 +219,6 @@ sub get_row {
     my @row = $sth->fetchrow_array;
 
     return @row;
-}
-
-sub return_row {
-    my ($self, $sql, @bind_variables) = @_;
-
-    $self->_deprecation_warning("row");
-
-    return $self->get_row($sql, @bind_variables);
 }
 
 =head2 get_col
@@ -268,14 +244,6 @@ sub get_col {
     }
 
     return @return;
-}
-
-sub return_col {
-    my ($self, $sql, @bind_variables) = @_;
-
-    $self->_deprecation_warning("col");
-
-    return $self->get_col($sql, @bind_variables);
 }
 
 =head2 get_data
@@ -325,14 +293,6 @@ sub get_data {
     return \@return;
 }
 
-sub return_data {
-    my ($self, $sql, @bind_variables) = @_;
-
-    $self->_deprecation_warning("data");
-
-    return $self->get_data($sql, @bind_variables);
-}
-
 =head2 get_tsv_data
 
 B<Get:> 1) $self 2) $sql 3) @bind_variables
@@ -374,15 +334,6 @@ sub get_tsv_data {
 
     return $return;
 }
-
-sub return_tsv_data {
-    my ($self, $sql, @bind_variables) = @_;
-
-    $self->_deprecation_warning("tsv_data");
-
-    return $self->get_tsv_data($sql, @bind_variables);
-}
-
 
 =head2 insert
 
@@ -544,17 +495,6 @@ sub _check_connection {
     } else {
         return;
     }
-}
-
-sub _deprecation_warning {
-    my ($self, $name) = @_;
-
-    croak "Expected 'name'" unless defined $name;
-
-    warn "x"x78 . "\n";
-    warn "WARNING. SQL::Easy interface was changed. Since version 0.06 method return_$name() was deprecated. Use get_$name() instead.\n";
-    warn "x"x78 . "\n";
-
 }
 
 =head1 CONTRIBUTORS
