@@ -46,3 +46,6 @@ NEXT
         [Major]
         * Removed deprecated methods 'return_*'
         * Constructor new() uses hash instead of hashref
+
+        [Minor]
+        * In pod using ' instead of "

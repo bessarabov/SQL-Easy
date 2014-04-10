@@ -49,17 +49,17 @@ Then we we can do some things with SQL::Easy
     );
 
     # get scalar
-    my $posts_count = $se->get_one("select count(id) from posts");
+    my $posts_count = $se->get_one('select count(id) from posts');
 
     # get list
     my ($dt, $title) = $se->get_row(
-        "select dt, title from posts where id = ?",
+        'select dt, title from posts where id = ?',
         1,
     );
 
     # get arrayref
     my $posts = $se->get_data(
-        "select dt_post, title from posts order by id"
+        'select dt_post, title from posts order by id',
     );
     # We will get
     #    [
@@ -74,16 +74,16 @@ Then we we can do some things with SQL::Easy
     #    ];
 
     my $post_id = $se->insert(
-        "insert into images ( dt_post, title ) values ( now(), ? )",
-        "My new idea"
+        'insert into images ( dt_post, title ) values ( now(), ? )',
+        'My new idea',
     );
     # $post_id is the id of the new row in table
 
     # Sometimes you don't need the any return value (when you delete or update
     # rows), you only need to execute some sql. You can do it by
     $se->execute(
-        "update posts set title = ? where id = ?",
-        "JAPH",
+        'update posts set title = ? where id = ?',
+        'JAPH',
         2,
     );
 
@@ -302,7 +302,7 @@ B<Return:> 1) $ with tab separated db data
 Sample usage:
 
     print $se->get_tsv_data(
-        "select dt_post, title from posts order by id limit 2"
+        'select dt_post, title from posts order by id limit 2',
     );
 
 It will output the text below (with the tabs as separators).
