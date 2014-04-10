@@ -46,6 +46,8 @@ NEXT
         [Major]
         * Removed deprecated methods 'return_*'
         * Constructor new() uses hash instead of hashref
+        * Removed `debug` parameter from new() (use `cb_before_execute`)
 
         [Minor]
+        * New ability to create callback `cb_before_execute`
         * In pod using ' instead of "

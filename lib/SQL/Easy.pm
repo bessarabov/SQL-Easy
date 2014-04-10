@@ -45,7 +45,6 @@ Then we we can do some things with SQL::Easy
         host     => '127.0.0.1',           # default '127.0.0.1'
         port     => 3306,                  # default 3306
         connection_check_threshold => 30,  # default 30
-        debug    => 0,                     # default 0
     );
 
     # get scalar
@@ -105,7 +104,7 @@ use Carp;
 
 =head2 new
 
-B<Get:> 1) $class 2) $params - hashref with connection information
+B<Get:> 1) $class 2) $params - hashref with constraction information
 
 B<Return:> 1) object
 
@@ -116,7 +115,6 @@ B<Return:> 1) object
         host     => '127.0.0.1',           # default '127.0.0.1'
         port     => 3306,                  # default 3306
         connection_check_threshold => 30,  # default 30
-        debug    => 0,                     # default 0
     );
 
 Or, if you already have dbh:
@@ -132,15 +130,42 @@ command to create SQL::Easy object:
         dbh => database(),
     );
 
+This is one special parameter `cb_before_execute`. It should recieve callback.
+This callback is run just before the sql is executed. The callback recieves
+hash with keys 'sql' and 'bind_variables' that contains the values. The return
+value of this callback is returned.
+
+    my $se4 = SQL::Easy->new(
+        ...
+        cb_before_execute => sub {
+            my (%params) = @_;
+
+            my $sql = delete $params{sql};
+            my $bind_variables = delete $params{bind_variables};
+
+            print $sql . "\n";
+            print join("\n", @{$bind_variables}) . "\n";
+
+            return '';
+        }
+    );
+
 =cut
 
 sub new {
-    my ($class, %params) = @_;
+    my ($class, @params) = @_;
+
+    if (ref $params[0] eq 'HASH') {
+        croak "Incorrect usage of SQL::Easy->new()."
+            . " Since version 2.0.0 SQL::Easy->new() need to recieve hash, not hashref."
+            ;
+    }
+    my %params = @params;
+
     my $self  = {};
 
     $self->{dbh} = $params{dbh};
     $self->{connection_check_threshold} = $params{connection_check_threshold} || 30;
-    $self->{debug} = $params{debug} || 0;
     $self->{count} = 0;
 
     unless ($self->{dbh}) {
@@ -156,6 +181,19 @@ sub new {
     };
 
     $self->{last_connection_check} = time;
+
+    if (defined $params{debug}) {
+        croak "Incorrect usage of SQL::Easy->new()."
+            . " Since version 2.0.0 SQL::Easy has no 'debug' parameter in new()."
+            ;
+    }
+
+    my $cb_before_execute = delete $params{cb_before_execute};
+    if (defined $cb_before_execute) {
+        croak "cb_before_execute should be coderef"
+            if ref($cb_before_execute) ne 'CODE';
+        $self->{_cb_before_execute} = $cb_before_execute;
+    }
 
     bless($self, $class);
     return $self;
@@ -191,7 +229,7 @@ sub get_one {
     $self->_reconnect_if_needed();
 
     my $sth = $self->{dbh}->prepare($sql);
-    $self->log_debug($sql);
+    $self->_run_cb_before_execute($sql, @bind_variables);
     $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     my @row = $sth->fetchrow_array;
@@ -213,7 +251,7 @@ sub get_row {
     $self->_reconnect_if_needed();
 
     my $sth = $self->{dbh}->prepare($sql);
-    $self->log_debug($sql);
+    $self->_run_cb_before_execute($sql, @bind_variables);
     $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     my @row = $sth->fetchrow_array;
@@ -236,7 +274,7 @@ sub get_col {
     $self->_reconnect_if_needed();
 
     my $sth = $self->{dbh}->prepare($sql);
-    $self->log_debug($sql);
+    $self->_run_cb_before_execute($sql, @bind_variables);
     $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     while (my @row = $sth->fetchrow_array) {
@@ -272,7 +310,7 @@ sub get_data {
     $self->_reconnect_if_needed();
 
     my $sth = $self->{dbh}->prepare($sql);
-    $self->log_debug($sql);
+    $self->_run_cb_before_execute($sql, @bind_variables);
     $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     my @cols = @{$sth->{NAME}};
@@ -320,7 +358,7 @@ sub get_tsv_data {
     $self->_reconnect_if_needed();
 
     my $sth = $self->{dbh}->prepare($sql);
-    $self->log_debug($sql);
+    $self->_run_cb_before_execute($sql, @bind_variables);
     $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     $return .= join ("\t", @{$sth->{NAME}}) . "\n";
@@ -351,7 +389,7 @@ sub insert {
     $self->_reconnect_if_needed();
 
     my $sth = $self->{dbh}->prepare($sql);
-    $self->log_debug($sql);
+    $self->_run_cb_before_execute($sql, @bind_variables);
     $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     return $sth->{mysql_insertid};
@@ -373,29 +411,33 @@ sub execute {
     $self->_reconnect_if_needed();
 
     my $sth = $self->{dbh}->prepare($sql);
-    $self->log_debug($sql);
+    $self->_run_cb_before_execute($sql, @bind_variables);
     $sth->execute(@bind_variables) or croak $self->{dbh}->errstr;
 
     return 1;
 }
 
-=head2 log_debug
+=begin comment _run_cb_before_execute
 
-B<Get:> 1) $self 2) $sql
+B<Get:> 1) $self 2) $sql 3) @bind_variables
 
 B<Return:> -
 
-If the debug is turned on sub wll print $sql to STDERR
+=end comment
 
 =cut
 
-sub log_debug {
-    my ($self, $sql) = @_;
+sub _run_cb_before_execute {
+    my ($self, $sql, @bind_variables) = @_;
 
-    if ($self->{debug}) {
-        $self->{count}++;
-        print STDERR "sql " . $self->{count} . ": '$sql'\n";
+    if (defined $self->{_cb_before_execute}) {
+        $self->{_cb_before_execute}->(
+            sql => $sql,
+            bind_variables => \@bind_variables,
+        );
     }
+
+    return '';
 }
 
 =begin comment _reconnect_if_needed
@@ -419,7 +461,6 @@ sub _reconnect_if_needed {
         if (_check_connection($self->{dbh})) {
             $self->{last_connection_check} = time;
         } else {
-            $self->log_debug( "Database connection went away, reconnecting" );
             $self->{dbh}= _get_connection($self->{settings});
         }
     }
