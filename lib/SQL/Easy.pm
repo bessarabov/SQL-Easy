@@ -38,7 +38,7 @@ Then we we can do some things with SQL::Easy
 
     use SQL::Easy;
 
-    my $se = SQL::Easy->new( {
+    my $se = SQL::Easy->new(
         database => 'blog',
         user     => 'user',
         password => 'secret',
@@ -46,7 +46,7 @@ Then we we can do some things with SQL::Easy
         port     => 3306,                  # default 3306
         connection_check_threshold => 30,  # default 30
         debug    => 0,                     # default 0
-    } );
+    );
 
     # get scalar
     my $posts_count = $se->get_one("select count(id) from posts");
@@ -109,7 +109,7 @@ B<Get:> 1) $class 2) $params - hashref with connection information
 
 B<Return:> 1) object
 
-    my $se = SQL::Easy->new( {
+    my $se = SQL::Easy->new(
         database => 'blog',
         user     => 'user',
         password => 'secret',
@@ -117,39 +117,39 @@ B<Return:> 1) object
         port     => 3306,                  # default 3306
         connection_check_threshold => 30,  # default 30
         debug    => 0,                     # default 0
-    } );
+    );
 
 Or, if you already have dbh:
 
-    my $se2 = SQL::Easy->new( {
+    my $se2 = SQL::Easy->new(
         dbh => $dbh,
-    } );
+    );
 
 For example, if you are woring with Dancer::Plugin::Database you can use this
 command to create SQL::Easy object:
 
-    my $se3 = SQL::Easy->new( {
+    my $se3 = SQL::Easy->new(
         dbh => database(),
-    } );
+    );
 
 =cut
 
 sub new {
-    my ($class, $params) = @_;
+    my ($class, %params) = @_;
     my $self  = {};
 
-    $self->{dbh} = $params->{dbh};
-    $self->{connection_check_threshold} = $params->{connection_check_threshold} || 30;
-    $self->{debug} = $params->{debug} || 0;
+    $self->{dbh} = $params{dbh};
+    $self->{connection_check_threshold} = $params{connection_check_threshold} || 30;
+    $self->{debug} = $params{debug} || 0;
     $self->{count} = 0;
 
     unless ($self->{dbh}) {
         $self->{settings} = {
-            db         => $params->{database},
-            user       => $params->{user},
-            password   => $params->{password},
-            host       => $params->{host} || '127.0.0.1',
-            port       => $params->{port} || 3306,
+            db         => $params{database},
+            user       => $params{user},
+            password   => $params{password},
+            host       => $params{host} || '127.0.0.1',
+            port       => $params{port} || 3306,
         };
 
         $self->{dbh} = _get_connection($self->{settings});
